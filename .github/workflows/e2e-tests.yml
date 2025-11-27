@@ -180,6 +180,12 @@ jobs:
           DB_USERNAME: ahamo_user
           DB_PASSWORD: ahamo_password
 
+      - name: Seed test data
+        run: |
+          PGPASSWORD=ahamo_password psql -h localhost -U ahamo_user -d ahamo_dummy_demo2 -f scripts/seed-data.sql
+          echo "Test data seeded"
+          PGPASSWORD=ahamo_password psql -h localhost -U ahamo_user -d ahamo_dummy_demo2 -c "SELECT COUNT(*) as product_count FROM products WHERE category_code = 'iphone'"
+
       - name: Start Frontend service
         working-directory: frontend
         run: |
@@ -297,6 +303,12 @@ jobs:
           DB_NAME: ahamo_dummy_demo2
           DB_USERNAME: ahamo_user
           DB_PASSWORD: ahamo_password
+
+      - name: Seed test data
+        run: |
+          PGPASSWORD=ahamo_password psql -h localhost -U ahamo_user -d ahamo_dummy_demo2 -f scripts/seed-data.sql
+          echo "Test data seeded"
+          PGPASSWORD=ahamo_password psql -h localhost -U ahamo_user -d ahamo_dummy_demo2 -c "SELECT COUNT(*) as product_count FROM products WHERE category_code = 'iphone'"
 
       - name: Start Frontend service
         working-directory: frontend
