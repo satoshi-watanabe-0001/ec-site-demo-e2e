@@ -1,0 +1,32 @@
+# 依存関係
+node_modules/
+
+# テスト結果
+test-results/
+playwright-report/
+playwright/.cache/
+
+# ビルド出力
+dist/
+
+# 環境変数
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# ログ
+*.log
+npm-debug.log*
+
+# Docker
+postgres_data/
