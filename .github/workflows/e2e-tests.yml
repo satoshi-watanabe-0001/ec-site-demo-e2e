@@ -16,6 +16,7 @@ on:
 
 env:
   NODE_VERSION: '20'
+  PNPM_VERSION: '9'
   FRONTEND_URL: http://localhost:3000
   API_BASE_URL: http://localhost:8080
 
@@ -74,12 +75,9 @@ jobs:
         run: |
           ./gradlew bootRun &
           echo "Waiting for backend to start..."
-          timeout 120 bash -c 'until curl -s http://localhost:8080/api/v1/health > /dev/null 2>&1; do sleep 2; done'
+          timeout 120 bash -c 'until curl -s http://localhost:8080/actuator/health > /dev/null 2>&1; do sleep 2; done'
           echo "Backend is ready"
         env:
-          SPRING_PROFILES_ACTIVE: test
-          DB_HOST: localhost
-          DB_PORT: 5432
           DB_NAME: ahamo_dummy_demo2
           DB_USERNAME: ahamo_user
           DB_PASSWORD: ahamo_password
@@ -137,6 +135,11 @@ jobs:
           path: frontend
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -157,11 +160,11 @@ jobs:
 
       - name: Install Frontend dependencies
         working-directory: frontend
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build Frontend
         working-directory: frontend
-        run: npm run build
+        run: pnpm run build
         env:
           NEXT_PUBLIC_API_URL: ${{ env.API_BASE_URL }}
 
@@ -170,12 +173,9 @@ jobs:
         run: |
           ./gradlew bootRun &
           echo "Waiting for backend to start..."
-          timeout 120 bash -c 'until curl -s http://localhost:8080/api/v1/health > /dev/null 2>&1; do sleep 2; done'
+          timeout 120 bash -c 'until curl -s http://localhost:8080/actuator/health > /dev/null 2>&1; do sleep 2; done'
           echo "Backend is ready"
         env:
-          SPRING_PROFILES_ACTIVE: test
-          DB_HOST: localhost
-          DB_PORT: 5432
           DB_NAME: ahamo_dummy_demo2
           DB_USERNAME: ahamo_user
           DB_PASSWORD: ahamo_password
@@ -183,7 +183,7 @@ jobs:
       - name: Start Frontend service
         working-directory: frontend
         run: |
-          npm run start &
+          pnpm run start &
           echo "Waiting for frontend to start..."
           timeout 60 bash -c 'until curl -s http://localhost:3000 > /dev/null 2>&1; do sleep 2; done'
           echo "Frontend is ready"
@@ -253,6 +253,11 @@ jobs:
           path: frontend
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -273,11 +278,11 @@ jobs:
 
       - name: Install Frontend dependencies
         working-directory: frontend
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build Frontend
         working-directory: frontend
-        run: npm run build
+        run: pnpm run build
         env:
           NEXT_PUBLIC_API_URL: ${{ env.API_BASE_URL }}
 
@@ -286,12 +291,9 @@ jobs:
         run: |
           ./gradlew bootRun &
           echo "Waiting for backend to start..."
-          timeout 120 bash -c 'until curl -s http://localhost:8080/api/v1/health > /dev/null 2>&1; do sleep 2; done'
+          timeout 120 bash -c 'until curl -s http://localhost:8080/actuator/health > /dev/null 2>&1; do sleep 2; done'
           echo "Backend is ready"
         env:
-          SPRING_PROFILES_ACTIVE: test
-          DB_HOST: localhost
-          DB_PORT: 5432
           DB_NAME: ahamo_dummy_demo2
           DB_USERNAME: ahamo_user
           DB_PASSWORD: ahamo_password
@@ -299,7 +301,7 @@ jobs:
       - name: Start Frontend service
         working-directory: frontend
         run: |
-          npm run start &
+          pnpm run start &
           echo "Waiting for frontend to start..."
           timeout 60 bash -c 'until curl -s http://localhost:3000 > /dev/null 2>&1; do sleep 2; done'
           echo "Frontend is ready"
