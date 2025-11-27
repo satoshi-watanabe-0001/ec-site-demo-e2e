@@ -35,12 +35,11 @@ CREATE TABLE IF NOT EXISTS product_variants (
     id BIGSERIAL PRIMARY KEY,
     product_id BIGINT NOT NULL,
     manufacturer VARCHAR(100),
-    model_name VARCHAR(100),
-    storage_capacity VARCHAR(20),
-    color_code VARCHAR(50),
+    model_name VARCHAR(200),
+    storage_capacity VARCHAR(50),
+    color_code VARCHAR(20),
     color_name VARCHAR(50),
-    image_urls TEXT[],
-    is_active BOOLEAN DEFAULT TRUE,
+    image_urls JSONB,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (product_id) REFERENCES products(id)
@@ -49,10 +48,11 @@ CREATE TABLE IF NOT EXISTS product_variants (
 -- キャンペーンテーブル
 CREATE TABLE IF NOT EXISTS campaigns (
     id BIGSERIAL PRIMARY KEY,
-    campaign_code VARCHAR(50) NOT NULL UNIQUE,
+    campaign_code VARCHAR(100) UNIQUE NOT NULL,
+    campaign_name VARCHAR(200) NOT NULL,
     badge_text VARCHAR(100),
-    start_date TIMESTAMP NOT NULL,
-    end_date TIMESTAMP NOT NULL,
+    valid_from TIMESTAMP,
+    valid_to TIMESTAMP,
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -96,7 +96,7 @@ SELECT
     '256GB',
     'natural-titanium',
     'ナチュラルチタニウム',
-    ARRAY['/images/devices/iphone-16-pro-max.png']
+    '["/images/devices/iphone-16-pro-max.png"]'::jsonb
 FROM products p WHERE p.name = 'iPhone 16 Pro Max'
 ON CONFLICT DO NOTHING;
 
@@ -108,7 +108,7 @@ SELECT
     '256GB',
     'natural-titanium',
     'ナチュラルチタニウム',
-    ARRAY['/images/devices/iphone-16-pro.png']
+    '["/images/devices/iphone-16-pro.png"]'::jsonb
 FROM products p WHERE p.name = 'iPhone 16 Pro'
 ON CONFLICT DO NOTHING;
 
@@ -120,7 +120,7 @@ SELECT
     '128GB',
     'black',
     'ブラック',
-    ARRAY['/images/devices/iphone-16-plus.png']
+    '["/images/devices/iphone-16-plus.png"]'::jsonb
 FROM products p WHERE p.name = 'iPhone 16 Plus'
 ON CONFLICT DO NOTHING;
 
@@ -132,7 +132,7 @@ SELECT
     '128GB',
     'black',
     'ブラック',
-    ARRAY['/images/devices/iphone-16.png']
+    '["/images/devices/iphone-16.png"]'::jsonb
 FROM products p WHERE p.name = 'iPhone 16'
 ON CONFLICT DO NOTHING;
 
@@ -144,14 +144,14 @@ SELECT
     '128GB',
     'black',
     'ブラック',
-    ARRAY['/images/devices/iphone-15.png']
+    '["/images/devices/iphone-15.png"]'::jsonb
 FROM products p WHERE p.name = 'iPhone 15'
 ON CONFLICT DO NOTHING;
 
 -- キャンペーンを挿入
-INSERT INTO campaigns (campaign_code, badge_text, start_date, end_date, is_active) VALUES
-('iphone-special-2024', 'iPhone特別キャンペーン', '2024-01-01 00:00:00', '2025-12-31 23:59:59', TRUE),
-('new-device-discount', '新規契約割引', '2024-01-01 00:00:00', '2025-12-31 23:59:59', TRUE)
+INSERT INTO campaigns (campaign_code, campaign_name, badge_text, valid_from, valid_to, is_active) VALUES
+('iphone-special-2024', 'iPhone特別キャンペーン2024', 'iPhone特別キャンペーン', '2024-01-01 00:00:00', '2025-12-31 23:59:59', TRUE),
+('new-device-discount', '新規契約割引キャンペーン', '新規契約割引', '2024-01-01 00:00:00', '2025-12-31 23:59:59', TRUE)
 ON CONFLICT (campaign_code) DO NOTHING;
 
 -- 製品キャンペーン関連を挿入
