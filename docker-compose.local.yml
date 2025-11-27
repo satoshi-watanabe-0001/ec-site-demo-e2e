@@ -1,0 +1,32 @@
+# EC-271: iPhoneカテゴリページE2Eテスト自動化
+# ローカル開発用Docker Compose設定（PostgreSQLのみ）
+#
+# 使用方法:
+#   docker-compose -f docker-compose.local.yml up -d
+#   # フロントエンドとバックエンドは手動で起動
+#   npm test
+
+version: '3.8'
+
+services:
+  # PostgreSQLデータベース
+  postgres:
+    image: postgres:15-alpine
+    container_name: ec-site-e2e-postgres-local
+    environment:
+      POSTGRES_DB: ec_site_demo
+      POSTGRES_USER: ec_user
+      POSTGRES_PASSWORD: ec_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_local:/var/lib/postgresql/data
+      - ./scripts/seed-data.sql:/docker-entrypoint-initdb.d/01-seed-data.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ec_user -d ec_site_demo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data_local:

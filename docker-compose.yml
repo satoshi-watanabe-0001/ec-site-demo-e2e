@@ -1,0 +1,87 @@
+# EC-271: iPhoneカテゴリページE2Eテスト自動化
+# E2Eテスト環境用Docker Compose設定
+#
+# 使用方法:
+#   docker-compose up -d
+#   npm test
+#   docker-compose down
+
+version: '3.8'
+
+services:
+  # PostgreSQLデータベース
+  postgres:
+    image: postgres:15-alpine
+    container_name: ec-site-e2e-postgres
+    environment:
+      POSTGRES_DB: ec_site_demo
+      POSTGRES_USER: ec_user
+      POSTGRES_PASSWORD: ec_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/seed-data.sql:/docker-entrypoint-initdb.d/01-seed-data.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ec_user -d ec_site_demo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ec-site-network
+
+  # バックエンドAPI
+  backend:
+    image: ec-site-demo-backend:latest
+    build:
+      context: ../ec-site-demo-backend
+      dockerfile: Dockerfile
+    container_name: ec-site-e2e-backend
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/ec_site_demo
+      SPRING_DATASOURCE_USERNAME: ec_user
+      SPRING_DATASOURCE_PASSWORD: ec_password
+      SERVER_PORT: 8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - ec-site-network
+
+  # フロントエンド
+  frontend:
+    image: ec-site-demo-frontend:latest
+    build:
+      context: ../ec-site-demo-frontend
+      dockerfile: Dockerfile
+    container_name: ec-site-e2e-frontend
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://backend:8080
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - ec-site-network
+
+networks:
+  ec-site-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
