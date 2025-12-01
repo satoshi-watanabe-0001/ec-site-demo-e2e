@@ -1,71 +1,13 @@
 -- EC-271: iPhoneカテゴリページE2Eテスト自動化
 -- テストデータシードスクリプト
 --
--- このスクリプトはDocker Compose起動時に自動実行されます。
+-- このスクリプトはFlywayマイグレーション後に手動で実行します。
 -- iPhoneカテゴリの製品データ、バリアント、キャンペーンデータを挿入します。
-
--- カテゴリテーブル
-CREATE TABLE IF NOT EXISTS categories (
-    id BIGSERIAL PRIMARY KEY,
-    category_code VARCHAR(50) NOT NULL UNIQUE,
-    display_name VARCHAR(100) NOT NULL,
-    hero_image_url VARCHAR(500),
-    lead_text TEXT,
-    display_order INTEGER DEFAULT 0,
-    is_active BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- 製品テーブル
-CREATE TABLE IF NOT EXISTS products (
-    id BIGSERIAL PRIMARY KEY,
-    category_code VARCHAR(50) NOT NULL,
-    name VARCHAR(200) NOT NULL,
-    description TEXT,
-    price DECIMAL(12, 2) NOT NULL,
-    is_active BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (category_code) REFERENCES categories(category_code)
-);
-
--- 製品バリアントテーブル
-CREATE TABLE IF NOT EXISTS product_variants (
-    id BIGSERIAL PRIMARY KEY,
-    product_id BIGINT NOT NULL,
-    manufacturer VARCHAR(100),
-    model_name VARCHAR(200),
-    storage_capacity VARCHAR(50),
-    color_code VARCHAR(20),
-    color_name VARCHAR(50),
-    image_urls JSONB,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (product_id) REFERENCES products(id)
-);
-
--- キャンペーンテーブル
-CREATE TABLE IF NOT EXISTS campaigns (
-    id BIGSERIAL PRIMARY KEY,
-    campaign_code VARCHAR(100) UNIQUE NOT NULL,
-    campaign_name VARCHAR(200) NOT NULL,
-    badge_text VARCHAR(100),
-    valid_from TIMESTAMP,
-    valid_to TIMESTAMP,
-    is_active BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- 製品キャンペーン関連テーブル
-CREATE TABLE IF NOT EXISTS product_campaigns (
-    product_id BIGINT NOT NULL,
-    campaign_id BIGINT NOT NULL,
-    PRIMARY KEY (product_id, campaign_id),
-    FOREIGN KEY (product_id) REFERENCES products(id),
-    FOREIGN KEY (campaign_id) REFERENCES campaigns(id)
-);
+--
+-- 使用方法:
+--   docker exec -i ec-site-e2e-postgres-local psql -U ahamo_user -d ahamo_dummy_demo2 < scripts/seed-data.sql
+--
+-- 注意: テーブルはFlywayマイグレーションで作成されるため、このスクリプトではデータ投入のみ行います。
 
 -- iPhoneカテゴリを挿入
 INSERT INTO categories (category_code, display_name, hero_image_url, lead_text, display_order, is_active)

@@ -14,16 +14,15 @@ services:
     image: postgres:15-alpine
     container_name: ec-site-e2e-postgres-local
     environment:
-      POSTGRES_DB: ec_site_demo
-      POSTGRES_USER: ec_user
-      POSTGRES_PASSWORD: ec_password
+      POSTGRES_DB: ahamo_dummy_demo2
+      POSTGRES_USER: ahamo_user
+      POSTGRES_PASSWORD: ahamo_password
     ports:
       - "5432:5432"
     volumes:
       - postgres_data_local:/var/lib/postgresql/data
-      - ./scripts/seed-data.sql:/docker-entrypoint-initdb.d/01-seed-data.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ec_user -d ec_site_demo"]
+      test: ["CMD-SHELL", "pg_isready -U ahamo_user -d ahamo_dummy_demo2"]
       interval: 10s
       timeout: 5s
       retries: 5
