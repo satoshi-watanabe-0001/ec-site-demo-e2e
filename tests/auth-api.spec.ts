@@ -31,12 +31,13 @@ const INVALID_USER = {
 
 /**
  * ログインAPIレスポンスの型定義
+ * バックエンドはスネークケースを使用
  */
 interface LoginResponse {
-  accessToken: string
-  refreshToken: string
-  tokenType: string
-  expiresIn: number
+  access_token: string
+  refresh_token: string
+  token_type: string
+  expires_in: number
   user: {
     id: string
     name: string
@@ -69,10 +70,10 @@ test.describe('認証API統合テスト (EC-275)', () => {
       expect(response.status()).toBe(200)
 
       const data: LoginResponse = await response.json()
-      expect(data).toHaveProperty('accessToken')
-      expect(data).toHaveProperty('refreshToken')
-      expect(data).toHaveProperty('tokenType', 'Bearer')
-      expect(data).toHaveProperty('expiresIn')
+      expect(data).toHaveProperty('access_token')
+      expect(data).toHaveProperty('refresh_token')
+      expect(data).toHaveProperty('token_type', 'Bearer')
+      expect(data).toHaveProperty('expires_in')
       expect(data).toHaveProperty('user')
       expect(data.user).toHaveProperty('id')
       expect(data.user).toHaveProperty('email', TEST_USER.email)
@@ -90,7 +91,7 @@ test.describe('認証API統合テスト (EC-275)', () => {
 
       const data: LoginResponse = await response.json()
       // JWTは3つのパートで構成される（header.payload.signature）
-      const jwtParts = data.accessToken.split('.')
+      const jwtParts = data.access_token.split('.')
       expect(jwtParts.length).toBe(3)
     })
 
@@ -106,11 +107,11 @@ test.describe('認証API統合テスト (EC-275)', () => {
 
       const data: LoginResponse = await response.json()
       // JWTは3つのパートで構成される（header.payload.signature）
-      const jwtParts = data.refreshToken.split('.')
+      const jwtParts = data.refresh_token.split('.')
       expect(jwtParts.length).toBe(3)
     })
 
-    test('expiresInが正の整数である', async ({ request }) => {
+    test('expires_inが正の整数である', async ({ request }) => {
       const response = await request.post(`${AUTH_API_BASE_URL}/api/v1/auth/login`, {
         data: {
           email: TEST_USER.email,
@@ -121,8 +122,8 @@ test.describe('認証API統合テスト (EC-275)', () => {
       expect(response.status()).toBe(200)
 
       const data: LoginResponse = await response.json()
-      expect(typeof data.expiresIn).toBe('number')
-      expect(data.expiresIn).toBeGreaterThan(0)
+      expect(typeof data.expires_in).toBe('number')
+      expect(data.expires_in).toBeGreaterThan(0)
     })
   })
 
@@ -225,8 +226,8 @@ test.describe('認証API統合テスト (EC-275)', () => {
 
     test('認証サービスルートエンドポイント', async ({ request }) => {
       const response = await request.get(`${AUTH_API_BASE_URL}/`)
-      // ルートエンドポイントは200または404
-      expect([200, 404]).toContain(response.status())
+      // ルートエンドポイントは200、403（認証必要）、または404
+      expect([200, 403, 404]).toContain(response.status())
     })
   })
 })
@@ -245,10 +246,10 @@ test.describe('APIレスポンス形式検証 (EC-275)', () => {
     const data: LoginResponse = await response.json()
 
     // 必須フィールドの存在確認
-    expect(data.accessToken).toBeDefined()
-    expect(data.refreshToken).toBeDefined()
-    expect(data.tokenType).toBeDefined()
-    expect(data.expiresIn).toBeDefined()
+    expect(data.access_token).toBeDefined()
+    expect(data.refresh_token).toBeDefined()
+    expect(data.token_type).toBeDefined()
+    expect(data.expires_in).toBeDefined()
     expect(data.user).toBeDefined()
 
     // ユーザー情報の構造確認
