@@ -161,9 +161,30 @@ FROM products p, campaigns c
 WHERE p.name LIKE 'iPhone 16%' AND c.campaign_code = 'iphone-special-2024'
 ON CONFLICT DO NOTHING;
 
+-- EC-275: ログイン画面E2E
+-- ユーザーテーブル（認証用）
+CREATE TABLE IF NOT EXISTS users (
+    id BIGSERIAL PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    name VARCHAR(255) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- メールアドレスの検索用インデックス
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+
+-- テストユーザーを挿入
+-- パスワード: password123 (BCryptハッシュ)
+INSERT INTO users (email, name, password_hash) VALUES
+('test@docomo.ne.jp', 'テストユーザー', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZRGdjGj/n3.rsS3/r.czqSK89lgHy')
+ON CONFLICT (email) DO NOTHING;
+
 -- 確認用クエリ
 -- SELECT * FROM categories;
 -- SELECT * FROM products;
 -- SELECT * FROM product_variants;
 -- SELECT * FROM campaigns;
 -- SELECT * FROM product_campaigns;
+-- SELECT * FROM users;

@@ -1,4 +1,5 @@
 # EC-271: iPhoneカテゴリページE2Eテスト自動化
+# EC-275: ログイン画面E2E
 # E2Eテスト環境用Docker Compose設定
 #
 # 使用方法:
@@ -31,6 +32,7 @@ services:
       - ec-site-network
 
   # バックエンドAPI
+  # EC-275: 認証機能を含むバックエンドサービス
   backend:
     image: ec-site-demo-backend:latest
     build:
@@ -43,6 +45,8 @@ services:
       SPRING_DATASOURCE_USERNAME: ec_user
       SPRING_DATASOURCE_PASSWORD: ec_password
       SERVER_PORT: 8080
+      # EC-275: JWT認証用シークレットキー（環境変数から取得、デフォルト値あり）
+      JWT_SECRET: ${JWT_SECRET:-e2e-test-secret}
     ports:
       - "8080:8080"
     depends_on:
