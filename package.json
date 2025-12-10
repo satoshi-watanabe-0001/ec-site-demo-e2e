@@ -1,7 +1,7 @@
 {
   "name": "ec-site-demo-e2e",
   "version": "1.0.0",
-  "description": "EC Site Demo E2E Tests - iPhoneカテゴリページE2Eテスト自動化 (EC-271)",
+  "description": "EC Site Demo E2E Tests - iPhoneカテゴリページE2Eテスト自動化 (EC-271), ログイン画面E2E (EC-275)",
   "scripts": {
     "test": "playwright test",
     "test:ui": "playwright test --ui",
@@ -10,6 +10,10 @@
     "test:iphone": "playwright test tests/iphone-category.spec.ts",
     "test:api": "playwright test tests/api-validation.spec.ts",
     "test:performance": "playwright test tests/performance.spec.ts",
+    "test:login": "playwright test tests/login-flow.spec.ts",
+    "test:auth-api": "playwright test tests/auth-api.spec.ts",
+    "test:user-flows": "playwright test tests/login-flow.spec.ts",
+    "test:api-integration": "playwright test tests/auth-api.spec.ts",
     "report": "playwright show-report",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
