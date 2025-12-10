@@ -101,9 +101,9 @@ WHERE p.name LIKE 'iPhone 16%' AND c.campaign_code = 'iphone-special-2024'
 ON CONFLICT DO NOTHING;
 
 -- EC-275: テストユーザーを挿入
--- パスワード: password123 (BCryptハッシュ)
+-- パスワード: password123 (BCryptハッシュ - Python bcryptで生成)
 INSERT INTO users (email, name, password_hash) VALUES
-('test@docomo.ne.jp', 'テストユーザー', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZRGdjGj/n3.rsS3/r.czqSK89lgHy')
+('test@docomo.ne.jp', 'テストユーザー', '$2a$10$wmDe9bp/EIn/2LKOq/relOkF8DdZuoLW21j3QRnL2z7p886BZ3X3K')
 ON CONFLICT (email) DO NOTHING;
 
 -- 確認用クエリ
