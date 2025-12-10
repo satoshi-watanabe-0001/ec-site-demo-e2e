@@ -44,8 +44,9 @@ services:
       SPRING_DATASOURCE_USERNAME: ec_user
       SPRING_DATASOURCE_PASSWORD: ec_password
       SERVER_PORT: 8080
-      # EC-275: JWT認証用シークレットキー（環境変数から取得、デフォルト値あり）
-      JWT_SECRET: ${JWT_SECRET:-e2e-test-secret}
+      # EC-275: JWT認証用シークレットキー（Base64エンコード済み）
+      # デコード前: e2e-test-secret-key-for-jwt-authentication-minimum-256-bits
+      JWT_SECRET: ${JWT_SECRET:-ZTJlLXRlc3Qtc2VjcmV0LWtleS1mb3Itand0LWF1dGhlbnRpY2F0aW9uLW1pbmltdW0tMjU2LWJpdHM=}
     ports:
       - "8080:8080"
     depends_on:
