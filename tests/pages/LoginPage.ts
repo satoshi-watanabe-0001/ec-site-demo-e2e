@@ -43,7 +43,8 @@ export class LoginPage {
     this.emailError = page.locator('#email + [role="alert"], #email ~ [role="alert"]')
     this.passwordError = page.locator('#password').locator('..').locator('[role="alert"]')
     this.forgotPasswordLink = page.locator('a[href="/forgot-password"]')
-    this.signupLink = page.locator('a[href="/signup"]')
+    // フォーム内の新規登録リンクのみを対象にする（ヘッダーにも同じリンクがあるため）
+    this.signupLink = page.locator('form').locator('a[href="/signup"]')
     this.recentAccountsList = page.locator('text=過去にログインしたアカウント')
   }
 
