@@ -65,7 +65,7 @@ services:
     image: ec-site-demo-frontend:latest
     build:
       context: ../ec-site-demo-frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.e2e
     container_name: ec-site-e2e-frontend
     environment:
       NEXT_PUBLIC_API_BASE_URL: http://backend:8080
